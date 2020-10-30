@@ -8,3 +8,7 @@
 3. composer install
 4. Connect db in config file (.env)
 5. symfony server:start
+
+# Admin panel
+Login: admin
+Password: admin
