@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>
+  {% block title %}Title{% endblock %}
+    </title>
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+  </head>
+  <body>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="{{ path('home') }}">Test Task Bidrento</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        {% if is_granted("ROLE_ADMIN") %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{{ path("post_new") }}">Add a new post
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        {% endif %}
+
+      </ul>
+      {% if app.user %}
+        <a class="btn btn-outline-success my-2 my-sm-0" type="button" href="{{ path('app_logout') }}">Logout</a>
+      {% else %}
+        <a class="btn btn-outline-success my-2 my-sm-0" type="button" href="{{ path('app_login') }}">Login</a>
+      {% endif %}
+
+    </div>
+  </nav>
+    {% block body %}
+  {% endblock %}
+    {{ encore_entry_script_tags('app') }}
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>

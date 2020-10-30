@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post{% endblock %}
+
+{% block body %}
+    <div class="blog">
+        <h1>{{ post.title }}</h1>
+        <div class="container">{{ post.content }}</div>
+    </div>
+    <div class="container">
+
+        <div class="row"  id="comments">
+            <div class="panel panel-default widget">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-comment"></span>
+                    <h3 class="panel-title">
+                        Recent Comments</h3>
+                    <span class="label label-info">
+                    </span>
+                </div>
+
+                <div class="panel-body">
+                    {% for comment in post.comments %}
+                        {% if comment.hide == false or  is_granted("ROLE_ADMIN") %}
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-xs-2 col-md-1">
+                                   </div>
+                                <div class="col-xs-10 col-md-11">
+                                    <div>
+                                        <div class="mic-info">
+                                            By: <a href="#">Anon</a>
+                                        </div>
+                                    </div>
+                                    <div class="comment-text">
+                                        {% if comment.hide == 1 %}
+                                        {{ comment.content }}(THIS MESSAGE HIDDEN FROM USER)
+                                        {% else %}
+                                        {{ comment.content }}
+                                            {% endif%}
+                                    </div>
+                                    {% if is_granted("ROLE_ADMIN") %}
+                                    <div class="action">
+                                        <button type="button" class="btn btn-primary btn-xs comment-hide" data-id="{{ comment.p }}" title="Hide">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-xs comment-delete" data-id="{{ comment.p }}" title="Delete">
+
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Write your comment</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="send-comment">Send comment</button>
+    </div>
+
+    <a href="{{ path('home') }}">Back</a>
+{% endblock %}
+{% block javascripts %}
+<script>
+    function actionButton(element, button, route,method,text) {
+        let comment = document.getElementById(element);
+        if (comment) {
+            comment.addEventListener('click', e => {
+                if (e.target.className === button) {
+                    if (confirm(text)) {
+                        const id = e.target.getAttribute('data-id');
+                        fetch(route + id, {
+                            method: method
+                        }).then(res => window.location.reload());
+                        console.log(id);
+                    }
+                }
+            });
+        }
+    }
+    $(document).ready(function() {
+        $( "#send-comment" ).click(function() {
+            let message = $('textarea#exampleFormControlTextarea1').val();
+            $.post( "/comment/add", { content: message, id: {{ post.id }} })
+                .done(function() {
+                    $('#comments').load(window.location + ' #comments >  *');
+                });
+        });
+    });
+    actionButton('comments','btn btn-danger btn-xs comment-delete','/comment/delete/','DELETE',"Delete");
+    actionButton('comments','btn btn-primary btn-xs comment-hide','/comment/hide/','POST', "Hide");
+</script>
+{% endblock %}

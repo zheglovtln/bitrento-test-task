@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Main page{% endblock %}
+
+{% block body %}
+
+  <div class="blog" id="posts">
+    {% for post in posts %}
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h2>{{ post.title }}</h2>
+          <p>{{ (post.content|length > 250 ? post.content|slice(0, 250) ~ '. . . . . . .' : post.content)  }}</p>
+          <p>
+            <a class="btn btn-secondary" href="post/{{ post.id }}" role="button">Read more</a>
+          </p>
+          {% if is_granted("ROLE_ADMIN") %}
+            <a type="button" class="btn btn-warning" href="/post/edit/{{ post.id }}">Edit</a><button type="button" class="btn btn-danger post-delete" data-id="{{ post.id }}">Delete</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {{ encore_entry_script_tags('delete') }}
+{% endblock %}
+
